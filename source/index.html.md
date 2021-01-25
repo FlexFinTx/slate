@@ -195,7 +195,7 @@ Unsupported methods and key types result in `400 Bad Request` errors with meanin
 
 ## Get all DIDs
 
-> Request
+> Request Body
 
 ```shell
 curl --request GET \
@@ -374,3 +374,298 @@ Resolves the given DID based on it's DID Method to return the DID Document. The 
 | Parameter | Description                   |
 | --------- | ----------------------------- |
 | id        | The DID identifier to resolve |
+
+# Credentials
+
+All Credential management API's require an `Authorization` header with scheme `Bearer` with an access token obtained from the `Get Access Token` endpoint.
+
+## Create a Credential
+
+> Request Body
+
+```shell
+curl --request POST \
+    --url https://organization.hub.flexfintx.com/v1/credentials \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+    --data '{
+      "@context": ["https://www.w3.org/2018/credentials/v1", "https://schema.org"],
+      "type": ["VerifiableCredential", "AlumniCredential"],
+      "credentialSubject": {
+        "id": "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C",
+        "givenName": "John",
+        "familyName": "Doe",
+        "alumniOf": "Example University",
+      },
+      "issuer": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am",
+      "saveToBank": true,
+      "isRevocable": true,
+    }'
+```
+
+```javascript
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
+myHeaders.append("Content-Type", "application/json");
+
+var raw = JSON.stringify({
+  "@context": ["https://www.w3.org/2018/credentials/v1", "https://schema.org"],
+  type: ["VerifiableCredential", "AlumniCredential"],
+  credentialSubject: {
+    id: "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C",
+    givenName: "John",
+    familyName: "Doe",
+    alumniOf: "Example University",
+  },
+  issuer: "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am",
+  saveToBank: true,
+  isRevocable: true,
+});
+
+var requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: raw,
+  redirect: "follow",
+};
+
+fetch("https://organization.hub.flexfintx.com/v1/credentials", requestOptions)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://schema.org",
+    "https://w3id.org/vc-revocation-list-2020/v1"
+  ],
+  "id": "dc557bfe-4257-4a5a-b1f8-f3cd8dadd10a",
+  "type": ["VerifiableCredential", "AlumniCredential"],
+  "issuer": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am",
+  "issuanceDate": "2021-01-25T00:59:15.857Z",
+  "credentialSubject": {
+    "id": "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C",
+    "givenName": "John",
+    "familyName": "Doe",
+    "alumniOf": "Example University"
+  },
+  "credentialStatus": {
+    "id": "https://sandbox.hub.flexfintx.com/v1/revocations/list/74268682-176c-427f-ace2-b0b88d415bd8#1",
+    "type": "RevocationList2020Status",
+    "revocationListIndex": 1,
+    "revocationListCredential": "https://sandbox.hub.flexfintx.com/v1/revocations/list/74268682-176c-427f-ace2-b0b88d415bd8"
+  },
+  "proof": {
+    "type": "Ed25519Signature2018",
+    "created": "2021-01-25T00:59:15.926Z",
+    "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..63hx3XYtdJc2jG3lkjayZrwPSV-8N5_KWvoSP5H5d7rwy0hgkE1ptkIlcyy9fAo0G_mUFCb7I1ylNREKP92cDg",
+    "proofPurpose": "assertionMethod",
+    "verificationMethod": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am#z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am"
+  }
+}
+```
+
+Creates a new Verifiable Credential signed by the organization's DID that is specified in the `issuer` field. Any fields under `credentialSubject` are allowed as long as they exist as a `https://schema.org/` specification.
+
+### Request Body
+
+`POST /credentials`
+
+| Parameter         | Description                                                                                                           |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------- |
+| @context          | The JSON-LD context for the credential                                                                                |
+| type              | Type of the Verifiable Credential                                                                                     |
+| credentialSubject | Specific details contained within the credential. `id` field must be the DID of the receiver/holder of the credential |
+| issuer            | A DID owned by the organization used to sign the credential                                                           |
+| saveToBank        | `true` if the created credential should be stored in the bank, `false` if not                                         |
+| isRevocable       | `true` if the credential can be revoked later, `false` if not                                                         |
+
+Returns the signed Credential
+
+Unsupported or invalid request bodies result in `400 Bad Request` errors with meaningful error descriptions.
+
+## Get all Credentials
+
+> Request Body
+
+```shell
+curl --request GET \
+    --url https://organization.hub.flexfintx.com/v1/credentials \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+```
+
+```javascript
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
+
+var requestOptions = {
+  method: "GET",
+  headers: myHeaders,
+  redirect: "follow",
+};
+
+fetch("https://organization.hub.flexfintx.com/v1/credentials", requestOptions)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+```json
+[
+  {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.org",
+      "https://w3id.org/vc-revocation-list-2020/v1"
+    ],
+    "type": ["VerifiableCredential", "AlumniCredential"],
+    "id": "46831e51-0e7d-47b9-b1e2-36ebf93bd95d",
+    "issuer": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am",
+    "issuanceDate": "2020-11-30T18:22:49.378Z",
+    "credentialSubject": {
+      "id": "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C",
+      "givenName": "John",
+      "familyName": "Doe",
+      "alumniOf": "Example University"
+    },
+    "credentialStatus": {
+      "id": "https://sandbox.hub.flexfintx.com/v1/revocations/list/74268682-176c-427f-ace2-b0b88d415bd8#0",
+      "type": "RevocationList2020Status",
+      "revocationListIndex": 0,
+      "revocationListCredential": "https://sandbox.hub.flexfintx.com/v1/revocations/list/74268682-176c-427f-ace2-b0b88d415bd8"
+    },
+    "proof": {
+      "type": "Ed25519Signature2018",
+      "created": "2020-11-30T18:22:49.402Z",
+      "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..tPH_SGm65wGlD8KXKos_fGozAqXB3xSoTVAvhyJaudi8pvTehWAnHcVNxFr42DWf39Y1P7FenEW8rMu_EFASDQ",
+      "proofPurpose": "assertionMethod",
+      "verificationMethod": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am#z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am"
+    }
+  },
+  {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.org"
+    ],
+    "type": ["VerifiableCredential", "AlumniCredential"],
+    "id": "1758b393-f701-4844-b223-09fa95d2dc6b",
+    "issuer": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am",
+    "issuanceDate": "2021-01-25T01:07:11.455Z",
+    "proof": {
+      "type": "Ed25519Signature2018",
+      "created": "2021-01-25T01:07:11.467Z",
+      "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..GZKL35qIn0njHGYnbnyXpMkJ8ey3NusjZnobA9A0XlB5TOQggyikuJonvGmi4WYoKD2lVNJ66VMbe6K58rU5CQ",
+      "proofPurpose": "assertionMethod",
+      "verificationMethod": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am#z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am"
+    }
+  }
+]
+```
+
+Returns the credentials issued by the organization. Credentials that were not saved to the bank will be returned without the `credentialSubject` field.
+
+### Request Body
+
+`GET /credentials`
+
+## Get all persisted Credentials
+
+```shell
+curl --request GET \
+    --url https://organization.hub.flexfintx.com/v1/credentials/persisted \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+```
+
+```javascript
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
+
+var requestOptions = {
+  method: "GET",
+  headers: myHeaders,
+  redirect: "follow",
+};
+
+fetch(
+  "https://organization.hub.flexfintx.com/v1/credentials/persisted",
+  requestOptions
+)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+```json
+[
+  {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://w3id.org/vc-revocation-list-2020/v1"
+    ],
+    "type": ["VerifiableCredential", "RevocationList2020Credential"],
+    "id": "https://sandbox.hub.flexfintx.com/v1/revocations/list/74268682-176c-427f-ace2-b0b88d415bd8",
+    "issuer": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am",
+    "issuanceDate": "2020-11-30T18:21:38.105Z",
+    "credentialSubject": {
+      "id": "https://sandbox.hub.flexfintx.com/v1/revocations/list/74268682-176c-427f-ace2-b0b88d415bd8#list",
+      "type": "RevocationList2020",
+      "encodedList": "H4sIAAAAAAAAA-3BMQEAAADCoPVPbQsvoAAAAAAAAAAAAAAAAP4GcwM92tQwAAA"
+    },
+    "proof": {
+      "type": "Ed25519Signature2018",
+      "created": "2020-11-30T18:21:38.106Z",
+      "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..4cjdI8CvBb2kEl9cARWs4__kFtkkMOwcmxYbMf1vacj1mEM0khC7NUTfQgH4uOXd07SulS3xRIsYbQjGpcIJDg",
+      "proofPurpose": "assertionMethod",
+      "verificationMethod": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am#z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am"
+    }
+  },
+  {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.org",
+      "https://w3id.org/vc-revocation-list-2020/v1"
+    ],
+    "type": ["VerifiableCredential", "AlumniCredential"],
+    "id": "dc557bfe-4257-4a5a-b1f8-f3cd8dadd10a",
+    "issuer": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am",
+    "issuanceDate": "2021-01-25T00:59:15.857Z",
+    "credentialSubject": {
+      "id": "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C",
+      "givenName": "John",
+      "familyName": "Doe",
+      "alumniOf": "Example University"
+    },
+    "credentialStatus": {
+      "id": "https://sandbox.hub.flexfintx.com/v1/revocations/list/74268682-176c-427f-ace2-b0b88d415bd8#1",
+      "type": "RevocationList2020Status",
+      "revocationListIndex": 1,
+      "revocationListCredential": "https://sandbox.hub.flexfintx.com/v1/revocations/list/74268682-176c-427f-ace2-b0b88d415bd8"
+    },
+    "proof": {
+      "type": "Ed25519Signature2018",
+      "created": "2021-01-25T00:59:15.926Z",
+      "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..63hx3XYtdJc2jG3lkjayZrwPSV-8N5_KWvoSP5H5d7rwy0hgkE1ptkIlcyy9fAo0G_mUFCb7I1ylNREKP92cDg",
+      "proofPurpose": "assertionMethod",
+      "verificationMethod": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am#z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am"
+    }
+  }
+]
+```
+
+Returns the credentials issued by the organization that were saved to the bank. All returned credentials from this endpoint will include the `credentialSubject` field.
+
+### Request Body
+
+`GET /credentials/persisted`
+
+## Get Credential by ID
+
+> Request Body
