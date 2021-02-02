@@ -270,7 +270,7 @@ Returns the DID Documents of all DIDs owned by the organization.
 
 ```shell
 curl --request DELETE \
-    --url https://organization.hub.flexfintx.com/v1/dids/did:key:z6MkrS2hxw9xGjZ4yyJ8inzyoHWrq2wyj1xrtLJpoBQBTQEE \
+    --url https://organization.hub.flexfintx.com/v1/dids/<DID>\
     --header 'Authorization: Bearer <ACCESS_TOKEN>'
 ```
 
@@ -284,10 +284,7 @@ var requestOptions = {
   redirect: "follow",
 };
 
-fetch(
-  "https://organization.hub.flexfintx.com/v1/dids/did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C",
-  requestOptions
-)
+fetch("https://organization.hub.flexfintx.com/v1/dids/<DID>", requestOptions)
   .then((response) => response.text())
   .then((result) => console.log(result))
   .catch((error) => console.log("error", error));
@@ -574,7 +571,9 @@ Returns the credentials issued by the organization. Credentials that were not sa
 
 `GET /credentials`
 
-## Get all persisted Credentials
+## Get all Persisted Credentials
+
+> Request Body
 
 ```shell
 curl --request GET \
@@ -669,3 +668,827 @@ Returns the credentials issued by the organization that were saved to the bank. 
 ## Get Credential by ID
 
 > Request Body
+
+```shell
+curl --request GET \
+    --url https://organization.hub.flexfintx.com/v1/credentials/<ID> \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+```
+
+```javascript
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
+
+var requestOptions = {
+  method: "GET",
+  headers: myHeaders,
+  redirect: "follow",
+};
+
+fetch(
+  "https://organization.hub.flexfintx.com/v1/credentials/<ID>",
+  requestOptions
+)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+```json
+{
+  "@context": ["https://www.w3.org/2018/credentials/v1", "https://schema.org"],
+  "type": ["VerifiableCredential", "AlumniCredential"],
+  "id": "1758b393-f701-4844-b223-09fa95d2dc6b",
+  "issuer": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am",
+  "issuanceDate": "2021-01-25T01:07:11.455Z",
+  "proof": {
+    "type": "Ed25519Signature2018",
+    "created": "2021-01-25T01:07:11.467Z",
+    "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..GZKL35qIn0njHGYnbnyXpMkJ8ey3NusjZnobA9A0XlB5TOQggyikuJonvGmi4WYoKD2lVNJ66VMbe6K58rU5CQ",
+    "proofPurpose": "assertionMethod",
+    "verificationMethod": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am#z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am"
+  }
+}
+```
+
+Returns the credential issued by the organization which matches the provided ID. The returned credential may or may not contain the `credentialSubject` field based on whether it was saved to the bank or not.
+
+### URL Parameters
+
+`GET /credentials/:id`
+
+| Parameter | Description                                |
+| --------- | ------------------------------------------ |
+| id        | The identifier of the Credential to return |
+
+## Delete Credential by ID
+
+> Request Body
+
+```shell
+curl --request DELETE \
+    --url https://organization.hub.flexfintx.com/v1/credentials/<ID> \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+```
+
+```javascript
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
+
+var requestOptions = {
+  method: "DELETE",
+  headers: myHeaders,
+  redirect: "follow",
+};
+
+fetch(
+  "https://organization.hub.flexfintx.com/v1/credentials/<ID>",
+  requestOptions
+)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+```json
+OK
+```
+
+Deletes the credential issued by the organization which matches the provided ID.
+
+### URL Parameters
+
+`DELETE /credentials/:id`
+
+| Parameter | Description                                |
+| --------- | ------------------------------------------ |
+| id        | The identifier of the Credential to delete |
+
+# Revocations
+
+## Get Revocation Status of Credential
+
+> Request Body
+
+```shell
+curl --request GET \
+    --url https://organization.hub.flexfintx.com/v1/revocations/<ID> \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+```
+
+```javascript
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
+
+var requestOptions = {
+  method: "GET",
+  headers: myHeaders,
+  redirect: "follow",
+};
+
+fetch(
+  "https://organization.hub.flexfintx.com/v1/revocations/<ID>",
+  requestOptions
+)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+```json
+{
+  "isRevoked": true
+}
+```
+
+This API endpoint requires an `Authorization` header with scheme `Bearer` with an access token obtained from the `Get Access Token` endpoint.
+
+Returns the current revocation status of the credential which matches the provided ID. Returns `true` if it has been revoked, returns `false` otherwise.
+
+### URL Parameters
+
+`GET /revocations/:id`
+
+| Parameter | Description                                                       |
+| --------- | ----------------------------------------------------------------- |
+| id        | The identifier of the Credential to get the Revocation Status for |
+
+## Set Revocation Status of Credential
+
+> Request Body
+
+```shell
+curl --request GET \
+    --url https://organization.hub.flexfintx.com/v1/revocations/<ID> \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+```
+
+```javascript
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
+
+var raw = JSON.stringify({
+  setRevoked: true,
+});
+
+var requestOptions = {
+  method: "GET",
+  headers: myHeaders,
+  redirect: "follow",
+};
+
+fetch(
+  "https://organization.hub.flexfintx.com/v1/revocations/<ID>",
+  requestOptions
+)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+This API endpoint requires an `Authorization` header with scheme `Bearer` with an access token obtained from the `Get Access Token` endpoint.
+
+Used to set the revocation status of the credential which matches the provided ID.
+
+### URL Parameters
+
+`POST /revocations/:id`
+
+| Parameter | Description                                                          |
+| --------- | -------------------------------------------------------------------- |
+| id        | The identifier of the Credential to update the Revocation Status for |
+
+### Request Body
+
+| Parameter  | Description                                                                                         |
+| ---------- | --------------------------------------------------------------------------------------------------- |
+| setRevoked | Set the revocation status of the credential. `true` to revoke it, `false` to take back a revocation |
+
+## Get Revocation List
+
+> Request Body
+
+```shell
+curl --request GET \
+    --url https://organization.hub.flexfintx.com/v1/revocations/list/<ID> \
+```
+
+```javascript
+var requestOptions = {
+  method: "GET",
+  redirect: "follow",
+};
+
+fetch(
+  "https://organization.hub.flexfintx.com/v1/revocations/list/<ID>",
+  requestOptions
+)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://w3id.org/vc-revocation-list-2020/v1"
+  ],
+  "type": ["VerifiableCredential", "RevocationList2020Credential"],
+  "id": "https://sandbox.hub.flexfintx.com/v1/revocations/list/74268682-176c-427f-ace2-b0b88d415bd8",
+  "issuer": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am",
+  "issuanceDate": "2020-11-30T18:21:38.105Z",
+  "credentialSubject": {
+    "id": "https://sandbox.hub.flexfintx.com/v1/revocations/list/74268682-176c-427f-ace2-b0b88d415bd8#list",
+    "type": "RevocationList2020",
+    "encodedList": "H4sIAAAAAAAAA-3BMQEAAADCoPVPbQsvoAAAAAAAAAAAAAAAAP4GcwM92tQwAAA"
+  },
+  "proof": {
+    "type": "Ed25519Signature2018",
+    "created": "2020-11-30T18:21:38.106Z",
+    "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..4cjdI8CvBb2kEl9cARWs4__kFtkkMOwcmxYbMf1vacj1mEM0khC7NUTfQgH4uOXd07SulS3xRIsYbQjGpcIJDg",
+    "proofPurpose": "assertionMethod",
+    "verificationMethod": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am#z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am"
+  }
+}
+```
+
+Gets the RevocationList Credential with the provided ID. This API is public and is mostly used internally to get or set the revocation status of a credential.
+
+### URL Parameters
+
+`GET /revocations/list/:id`
+
+| Parameter | Description                                               |
+| --------- | --------------------------------------------------------- |
+| id        | The identifier of the RevocationList Credential to return |
+
+# Presentations
+
+All Presentation management API's require an `Authorization` header with scheme `Bearer` with an access token obtained from the `Get Access Token` endpoint.
+
+## Create Presentation Request Template
+
+> Request Body
+
+```shell
+curl --request POST \
+    --url https://organization.hub.flexfintx.com/v1/dids \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+    --data '{
+        "name": "Alumni Credential Verification 3",
+        "reason": "We need this to verify you hold a Bachelor'\''s Degree",
+        "credentialType": "AlumniCredential",
+        "credentialIssuers": [
+            "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Af"
+        ]
+    }'
+```
+
+```javascript
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
+myHeaders.append("Content-Type", "application/json");
+
+var raw = JSON.stringify({
+  name: "Alumni Credential Verification 3",
+  reason: "We need this to verify you hold a Bachelor's Degree",
+  credentialType: "AlumniCredential",
+  credentialIssuers: [
+    "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Af",
+  ],
+});
+
+var requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: raw,
+  redirect: "follow",
+};
+
+fetch(
+  "https://organization.hub.flexfintx.com/v1/presentations/templates",
+  requestOptions
+)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+```json
+{
+  "id": "34fad1c3-42be-494b-9c60-23e174bc6c95",
+  "name": "Alumni Credential Verification",
+  "reason": "We need this to verify you hold a Bachelor's Degree",
+  "credentialType": "AlumniCredential",
+  "credentialIssuers": [
+    "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Af"
+  ]
+}
+```
+
+Creates a new template for the organization to request presentations from holders of credentials. Used to provide information to the identity wallet about why the presentation is being requested, and what types of credentials are acceptable.
+
+### Request Body
+
+`POST /presentations/templates`
+
+| Parameter         | Description                                                                                                          |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------- |
+| name              | Descriptive name for the presentation request template                                                               |
+| reason            | Explanatory reason for the presentation request                                                                      |
+| credentialType    | `type` of credential that is accepted                                                                                |
+| credentialIssuers | Array of DID's representing issuers whose credentials are considered valid submissions for this presentation request |
+
+Returns the Presentation Request Template that is created.
+
+Unsupported requests result in `400 Bad Request` errors with meaningful error descriptions.
+
+## List Presentation Request Templates
+
+> Request Body
+
+```shell
+curl --request GET \
+    --url https://organization.hub.flexfintx.com/v1/presentations/templates \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+```
+
+```javascript
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
+
+var requestOptions = {
+  method: "GET",
+  headers: myHeaders,
+  redirect: "follow",
+};
+
+fetch(
+  "https://organization.hub.flexfintx.com/v1/presentations/templates",
+  requestOptions
+)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+```json
+[
+  {
+    "credentialIssuers": [
+      "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am"
+    ],
+    "id": "550ac6a8-811f-4d5a-983c-f2d83fee59db",
+    "name": "Alumni Credential Verification",
+    "reason": "We need this to verify you hold a Bachelor's Degree",
+    "credentialType": "AlumniCredential"
+  }
+]
+```
+
+Returns all Presentation Request Templates that were created by the organization.
+
+`GET /presentations/templates`
+
+## Get Presentation Request Template by ID
+
+> Request Body
+
+```shell
+curl --request GET \
+    --url https://organization.hub.flexfintx.com/v1/presentations/templates/<ID> \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+```
+
+```javascript
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
+
+var requestOptions = {
+  method: "GET",
+  headers: myHeaders,
+  redirect: "follow",
+};
+
+fetch(
+  "https://organization.hub.flexfintx.com/v1/presentations/templates/<ID>",
+  requestOptions
+)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+```json
+{
+  "credentialIssuers": [
+    "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Af"
+  ],
+  "id": "34fad1c3-42be-494b-9c60-23e174bc6c95",
+  "name": "Alumni Credential Verification 3",
+  "reason": "We need this to verify you hold a Bachelor's Degree",
+  "credentialType": "AlumniCredential"
+}
+```
+
+Returns the Presentation Request template created by the organization whose ID matches the one provided.
+
+### URL Parameters
+
+`GET /presentations/templates/:id`
+
+| Parameter | Description                                                   |
+| --------- | ------------------------------------------------------------- |
+| id        | The identifier of the Presentation Request Template to return |
+
+## Delete Presentation Request Template by ID
+
+> Request Body
+
+```shell
+curl --request DELETE \
+    --url https://organization.hub.flexfintx.com/v1/presentations/templates/<ID> \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>'
+```
+
+```javascript
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
+
+var requestOptions = {
+  method: "DELETE",
+  headers: myHeaders,
+  redirect: "follow",
+};
+
+fetch(
+  "https://organization.hub.flexfintx.com/v1/presentations/templates/<ID>",
+  requestOptions
+)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+```json
+OK
+```
+
+### URL Parameters
+
+`DELETE /presentations/templates/:id`
+
+| Parameter | Description                                            |
+| --------- | ------------------------------------------------------ |
+| id        | The Presentation Request Template identifier to delete |
+
+## Create Presentation Request
+
+> Request Body
+
+```shell
+curl --request POST \
+    --url https://organization.hub.flexfintx.com/v1/presentations/:templateId \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>'
+```
+
+```javascript
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
+myHeaders.append("Content-Type", "application/json");
+
+var requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  redirect: "follow",
+};
+
+fetch(
+  "https://organization.hub.flexfintx.com/v1/presentations/:templateId",
+  requestOptions
+)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+```json
+{
+  "id": "1b335cb7-f143-43e4-8ded-641621551542",
+  "template": {
+    "credentialIssuers": [
+      "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Af"
+    ],
+    "id": "46f04ad6-112f-4643-8fc3-0e43032f7cb7",
+    "name": "Alumni Credential Verification 5",
+    "reason": "We need this to verify you hold a Bachelor's Degree",
+    "credentialType": "AlumniCredential"
+  },
+  "challenge": "80fd9f7e-abeb-4543-824e-ba9967b648fd",
+  "domain": "https://organization.hub.flexfintx.com/v1/",
+  "callbackUrl": "https://organization.hub.flexfintx.com/v1/presentations/"
+}
+```
+
+Generates an instance of a Presentation Request from a previously created Presentation Request Template. Returns the created Presentation Request.
+
+### URL Parameters
+
+`POST /presentations/:templateId`
+
+| Parameter  | Description                                                                                   |
+| ---------- | --------------------------------------------------------------------------------------------- |
+| templateId | The Presentation Request Template identifier to create the Presentation Request instance from |
+
+## Submit Presentation
+
+> Request Body
+
+```shell
+curl --request POST \
+    --url https://organization.hub.flexfintx.com/v1/presentations/submission \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+    --data '{
+        "requestId": "e4d70ca3-2329-4fac-bbe7-458eb0b5de0b",
+        "presentation": {
+            "@context": [
+                "https://www.w3.org/2018/credentials/v1"
+            ],
+            "type": [
+                "VerifiablePresentation"
+            ],
+            "verifiableCredential": [
+                {
+                    "@context": [
+                        "https://www.w3.org/2018/credentials/v1",
+                        "https://schema.org"
+                    ],
+                    "id": "b485b676-7a61-4618-a6e2-65ea929e06d5",
+                    "type": [
+                        "VerifiableCredential",
+                        "AlumniCredential"
+                    ],
+                    "issuer": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am",
+                    "issuanceDate": "2021-02-02T03:18:20.560Z",
+                    "credentialSubject": {
+                        "id": "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C",
+                        "givenName": "John",
+                        "familyName": "Doe",
+                        "alumniOf": "Example University"
+                    },
+                    "proof": {
+                        "type": "Ed25519Signature2018",
+                        "created": "2021-02-02T03:18:20.604Z",
+                        "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..TXnHKJPE9JjGqL6G4KUFVn9ieSsu5xAZoXSMbMiDEQfxY7qoq-AXr3eBZSJqtHzuVg607QD00mU6AF4vZblYAg",
+                        "proofPurpose": "assertionMethod",
+                        "verificationMethod": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am#z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am"
+                    }
+                }
+            ],
+            "id": "a9acea58-4b00-46d2-ac54-d779c97b8362",
+            "holder": "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C",
+            "proof": {
+                "type": "Ed25519Signature2018",
+                "created": "2021-02-02T03:20:08.306Z",
+                "challenge": "62e34488-6fe1-4d69-a6e4-d1dc9a5b44dc",
+                "domain": "https://sandbox.hub.flexfintx.com/v1/",
+                "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..Y9iHyTJh4ZgTZnLwnCWn9ZtHG9RvxC7WrVcoC1K6bV9Io9oc_12KJFPcQgTndO98oDcomecMELJATVq5wy_6CQ",
+                "proofPurpose": "authentication",
+                "verificationMethod": "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C#z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C"
+            }
+        }
+    }'
+```
+
+```javascript
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
+myHeaders.append("Content-Type", "application/json");
+
+var raw = JSON.stringify({
+  requestId: "e4d70ca3-2329-4fac-bbe7-458eb0b5de0b",
+  presentation: {
+    "@context": ["https://www.w3.org/2018/credentials/v1"],
+    type: ["VerifiablePresentation"],
+    verifiableCredential: [
+      {
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://schema.org",
+        ],
+        id: "b485b676-7a61-4618-a6e2-65ea929e06d5",
+        type: ["VerifiableCredential", "AlumniCredential"],
+        issuer: "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am",
+        issuanceDate: "2021-02-02T03:18:20.560Z",
+        credentialSubject: {
+          id: "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C",
+          givenName: "John",
+          familyName: "Doe",
+          alumniOf: "Example University",
+        },
+        proof: {
+          type: "Ed25519Signature2018",
+          created: "2021-02-02T03:18:20.604Z",
+          jws:
+            "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..TXnHKJPE9JjGqL6G4KUFVn9ieSsu5xAZoXSMbMiDEQfxY7qoq-AXr3eBZSJqtHzuVg607QD00mU6AF4vZblYAg",
+          proofPurpose: "assertionMethod",
+          verificationMethod:
+            "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am#z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am",
+        },
+      },
+    ],
+    id: "a9acea58-4b00-46d2-ac54-d779c97b8362",
+    holder: "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C",
+    proof: {
+      type: "Ed25519Signature2018",
+      created: "2021-02-02T03:20:08.306Z",
+      challenge: "62e34488-6fe1-4d69-a6e4-d1dc9a5b44dc",
+      domain: "https://sandbox.hub.flexfintx.com/v1/",
+      jws:
+        "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..Y9iHyTJh4ZgTZnLwnCWn9ZtHG9RvxC7WrVcoC1K6bV9Io9oc_12KJFPcQgTndO98oDcomecMELJATVq5wy_6CQ",
+      proofPurpose: "authentication",
+      verificationMethod:
+        "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C#z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C",
+    },
+  },
+});
+
+var requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: raw,
+  redirect: "follow",
+};
+
+fetch(
+  "https://organization.hub.flexfintx.com/v1/presentations/submission",
+  requestOptions
+)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+```json
+OK
+```
+
+Accepts a Presentation Submission from a Credential Holder. This endpoint will mostly be used by the identity wallet of the credential holder.
+
+### Request Body
+
+| Parameter    | Description                                                          |
+| ------------ | -------------------------------------------------------------------- |
+| requestId    | The Presentation Request identifier for which this is the submission |
+| presentation | The signed Presentation which is the submission to this request      |
+
+## Fetch Presentation Submission
+
+> Request Body
+
+```shell
+curl --request GET \
+    --url https://organization.hub.flexfintx.com/v1/presentations/submission/:requestId \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+```
+
+```javascript
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
+
+var requestOptions = {
+  method: "GET",
+  headers: myHeaders,
+  redirect: "follow",
+};
+
+fetch(
+  "https://organization.hub.flexfintx.com/v1/presentations/submission/:requestId",
+  requestOptions
+)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+```json
+{
+  "requestId": "e4d70ca3-2329-4fac-bbe7-458eb0b5de0b",
+  "presentation": {
+    "@context": ["https://www.w3.org/2018/credentials/v1"],
+    "type": ["VerifiablePresentation"],
+    "verifiableCredential": [
+      {
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://schema.org"
+        ],
+        "type": ["VerifiableCredential", "AlumniCredential"],
+        "_id": "6018c4f8433d068475060afe",
+        "id": "b485b676-7a61-4618-a6e2-65ea929e06d5",
+        "issuer": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am",
+        "issuanceDate": "2021-02-02T03:18:20.560Z",
+        "credentialSubject": {
+          "id": "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C",
+          "givenName": "John",
+          "familyName": "Doe",
+          "alumniOf": "Example University"
+        },
+        "proof": {
+          "type": "Ed25519Signature2018",
+          "created": "2021-02-02T03:18:20.604Z",
+          "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..TXnHKJPE9JjGqL6G4KUFVn9ieSsu5xAZoXSMbMiDEQfxY7qoq-AXr3eBZSJqtHzuVg607QD00mU6AF4vZblYAg",
+          "proofPurpose": "assertionMethod",
+          "verificationMethod": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am#z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am"
+        }
+      }
+    ],
+    "id": "a9acea58-4b00-46d2-ac54-d779c97b8362",
+    "holder": "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C",
+    "proof": {
+      "type": "Ed25519Signature2018",
+      "created": "2021-02-02T03:20:08.306Z",
+      "challenge": "62e34488-6fe1-4d69-a6e4-d1dc9a5b44dc",
+      "domain": "https://sandbox.hub.flexfintx.com/v1/",
+      "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..Y9iHyTJh4ZgTZnLwnCWn9ZtHG9RvxC7WrVcoC1K6bV9Io9oc_12KJFPcQgTndO98oDcomecMELJATVq5wy_6CQ",
+      "proofPurpose": "authentication",
+      "verificationMethod": "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C#z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C"
+    }
+  }
+}
+```
+
+Returns the submitted Presentation for a given `requestId`. This endpoint should be polled by the Verifier to know when a Holder has shared a Presentation for their request.
+
+### URL Parameters
+
+| Parameter | Description                                                     |
+| --------- | --------------------------------------------------------------- |
+| requestId | The Presentation Request identifier to check the submission for |
+
+# Metadata
+
+The Metadata API requires an `Authorization` header with scheme `Bearer` with an access token obtained from the `Get Access Token` endpoint.
+
+## Get Hub Metadata
+
+> Request Body
+
+```shell
+curl --request GET \
+    --url https://organization.hub.flexfintx.com/v1/metadata \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>'
+```
+
+```javascript
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
+myHeaders.append("Content-Type", "application/json");
+
+var requestOptions = {
+  method: "GET",
+  headers: myHeaders,
+  redirect: "follow",
+};
+
+fetch("https://organization.hub.flexfintx.com/v1/metadata", requestOptions)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.log("error", error));
+```
+
+> Sample Response (200 OK)
+
+```json
+{
+  "currentRevocationListId": "https://sandbox.hub.flexfintx.com/v1/revocations/list/74268682-176c-427f-ace2-b0b88d415bd8",
+  "currentRevocationListIndex": 2
+}
+```
+
+Gets metadata information about the hub including the identifier for the Revocation List that is currently being updated (i.e. still has empty spots in it's `revocationList`) along with the current `revocationListIndex` which is the first index in the `revocationList` that is available to be assigned to a credential.
