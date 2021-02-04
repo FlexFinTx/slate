@@ -1010,7 +1010,7 @@ Creates a new template for the organization to request presentations from holder
 | name              | Descriptive name for the presentation request template                                                               |
 | reason            | Explanatory reason for the presentation request                                                                      |
 | credentialType    | `type` of credential that is accepted                                                                                |
-| credentialIssuers | Array of DID's representing issuers whose credentials are considered valid submissions for this presentation request |
+| credentialIssuers | Array of DID's representing issuers whose credentials are considered valid submissions for this presentation request. `self` is also allowed as a special case to allow for self-issued credentials - this is used for DIDAuth purposes. |
 
 Returns the Presentation Request Template that is created.
 
@@ -1216,9 +1216,9 @@ fetch(
         "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am"
       ],
       "id": "6d19e16f-fa00-4fda-bfe9-a7e98509b45d",
-      "name": "Alumni Credential Verification 6",
-      "reason": "We need this to verify you hold a Bachelor's Degree",
-      "credentialType": "AlumniCredential"
+      "name": "Employment Verification",
+      "reason": "We need this to verify you work at a registered company",
+      "credentialType": "EmploymentVerificationCredential"
     },
     {
       "credentialIssuers": [
