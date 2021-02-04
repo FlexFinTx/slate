@@ -1167,8 +1167,14 @@ OK
 
 ```shell
 curl --request POST \
-    --url https://organization.hub.flexfintx.com/v1/presentations/:templateId \
-    --header 'Authorization: Bearer <ACCESS_TOKEN>'
+    --url https://organization.hub.flexfintx.com/v1/presentations/templates/request \
+    --header 'Authorization: Bearer <ACCESS_TOKEN>' \
+    --data '{
+        "templates": [
+            "6d19e16f-fa00-4fda-bfe9-a7e98509b45d",
+            "550ac6a8-811f-4d5a-983c-f2d83fee59db"
+        ]
+    }'
 ```
 
 ```javascript
@@ -1176,14 +1182,22 @@ var myHeaders = new Headers();
 myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
 myHeaders.append("Content-Type", "application/json");
 
+var raw = JSON.stringify({
+  templates: [
+    "6d19e16f-fa00-4fda-bfe9-a7e98509b45d",
+    "550ac6a8-811f-4d5a-983c-f2d83fee59db",
+  ],
+});
+
 var requestOptions = {
   method: "POST",
+  body: raw,
   headers: myHeaders,
   redirect: "follow",
 };
 
 fetch(
-  "https://organization.hub.flexfintx.com/v1/presentations/:templateId",
+  "https://organization.hub.flexfintx.com/v1/presentations/templates/request",
   requestOptions
 )
   .then((response) => response.text())
@@ -1195,31 +1209,42 @@ fetch(
 
 ```json
 {
-  "id": "1b335cb7-f143-43e4-8ded-641621551542",
-  "template": {
-    "credentialIssuers": [
-      "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Af"
-    ],
-    "id": "46f04ad6-112f-4643-8fc3-0e43032f7cb7",
-    "name": "Alumni Credential Verification 5",
-    "reason": "We need this to verify you hold a Bachelor's Degree",
-    "credentialType": "AlumniCredential"
-  },
-  "challenge": "80fd9f7e-abeb-4543-824e-ba9967b648fd",
-  "domain": "https://organization.hub.flexfintx.com/v1/",
-  "callbackUrl": "https://organization.hub.flexfintx.com/v1/presentations/"
+  "id": "aac9577e-c47d-4c58-95df-08077fcb7ecc",
+  "templates": [
+    {
+      "credentialIssuers": [
+        "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am"
+      ],
+      "id": "6d19e16f-fa00-4fda-bfe9-a7e98509b45d",
+      "name": "Alumni Credential Verification 6",
+      "reason": "We need this to verify you hold a Bachelor's Degree",
+      "credentialType": "AlumniCredential"
+    },
+    {
+      "credentialIssuers": [
+        "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am"
+      ],
+      "id": "550ac6a8-811f-4d5a-983c-f2d83fee59db",
+      "name": "Alumni Credential Verification",
+      "reason": "We need this to verify you hold a Bachelor's Degree",
+      "credentialType": "AlumniCredential"
+    }
+  ],
+  "challenge": "ec7bded1-75f3-4bd8-b231-2aac2b996530",
+  "domain": "https://sandbox.hub.flexfintx.com/v1/",
+  "callbackUrl": "https://sandbox.hub.flexfintx.com/v1/presentations/"
 }
 ```
 
-Generates an instance of a Presentation Request from a previously created Presentation Request Template. Returns the created Presentation Request.
+Generates an instance of a Presentation Request from previously created Presentation Request Template(s). Returns the created Presentation Request.
 
 ### URL Parameters
 
-`POST /presentations/:templateId`
+`POST /presentations/templates/request`
 
-| Parameter  | Description                                                                                   |
-| ---------- | --------------------------------------------------------------------------------------------- |
-| templateId | The Presentation Request Template identifier to create the Presentation Request instance from |
+| Parameter | Description                                                                                    |
+| --------- | ---------------------------------------------------------------------------------------------- |
+| templates | The Presentation Request Template identifiers to create the Presentation Request instance from |
 
 ## Submit Presentation
 
