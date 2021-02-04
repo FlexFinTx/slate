@@ -935,7 +935,7 @@ Gets the RevocationList Credential with the provided ID. This API is public and 
 
 # Presentations
 
-All Presentation management API's require an `Authorization` header with scheme `Bearer` with an access token obtained from the `Get Access Token` endpoint.
+All Presentation management API's, except Presentation Submission, require an `Authorization` header with scheme `Bearer` with an access token obtained from the `Get Access Token` endpoint.
 
 ## Create Presentation Request Template
 
@@ -1005,11 +1005,11 @@ Creates a new template for the organization to request presentations from holder
 
 `POST /presentations/templates`
 
-| Parameter         | Description                                                                                                          |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------- |
-| name              | Descriptive name for the presentation request template                                                               |
-| reason            | Explanatory reason for the presentation request                                                                      |
-| credentialType    | `type` of credential that is accepted                                                                                |
+| Parameter         | Description                                                                                                                                                                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| name              | Descriptive name for the presentation request template                                                                                                                                                                                   |
+| reason            | Explanatory reason for the presentation request                                                                                                                                                                                          |
+| credentialType    | `type` of credential that is accepted                                                                                                                                                                                                    |
 | credentialIssuers | Array of DID's representing issuers whose credentials are considered valid submissions for this presentation request. `self` is also allowed as a special case to allow for self-issued credentials - this is used for DIDAuth purposes. |
 
 Returns the Presentation Request Template that is created.
@@ -1253,7 +1253,6 @@ Generates an instance of a Presentation Request from previously created Presenta
 ```shell
 curl --request POST \
     --url https://organization.hub.flexfintx.com/v1/presentations/submission \
-    --header 'Authorization: Bearer <ACCESS_TOKEN>' \
     --data '{
         "requestId": "e4d70ca3-2329-4fac-bbe7-458eb0b5de0b",
         "presentation": {
@@ -1308,7 +1307,6 @@ curl --request POST \
 
 ```javascript
 var myHeaders = new Headers();
-myHeaders.append("Authorization", "Bearer <ACCESS_TOKEN>");
 myHeaders.append("Content-Type", "application/json");
 
 var raw = JSON.stringify({
@@ -1380,6 +1378,8 @@ fetch(
 ```json
 OK
 ```
+
+**This endpoint does not require an `Authorization` header and is public**
 
 Accepts a Presentation Submission from a Credential Holder. This endpoint will mostly be used by the identity wallet of the credential holder.
 
