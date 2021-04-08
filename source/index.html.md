@@ -387,6 +387,8 @@ curl --request POST \
     --data '{
       "@context": ["https://www.w3.org/2018/credentials/v1", "https://schema.org"],
       "type": ["VerifiableCredential", "AlumniCredential"],
+      "name": "Alumni of EXU",
+      "issuerOrganization": "Example University",
       "credentialSubject": {
         "id": "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C",
         "givenName": "John",
@@ -407,6 +409,8 @@ myHeaders.append("Content-Type", "application/json");
 var raw = JSON.stringify({
   "@context": ["https://www.w3.org/2018/credentials/v1", "https://schema.org"],
   type: ["VerifiableCredential", "AlumniCredential"],
+  name: "Alumni of EXU",
+  issuerOrganization: "Example University",
   credentialSubject: {
     id: "did:key:z6MktP9Gzsj7bsdFiaZhJu3MwgQeb4DDq9x8brM2aMAnQp2C",
     givenName: "John",
@@ -442,6 +446,9 @@ fetch("https://organization.hub.flexfintx.com/v1/credentials", requestOptions)
   ],
   "id": "dc557bfe-4257-4a5a-b1f8-f3cd8dadd10a",
   "type": ["VerifiableCredential", "AlumniCredential"],
+  "name": "Alumni of EXU",
+  "image": "https://www.pngrepo.com/png/226672/512/rectangular-identity.png",
+  "issuerOrganization": "Example University",
   "issuer": "did:key:z6MkjMJyrpBvJ9S9Nj5xHPkQFqDy1ZeTaNhyNXq9YCxhm8Am",
   "issuanceDate": "2021-01-25T00:59:15.857Z",
   "credentialSubject": {
@@ -472,14 +479,17 @@ Creates a new Verifiable Credential signed by the organization's DID that is spe
 
 `POST /credentials`
 
-| Parameter         | Description                                                                                                           |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------- |
-| @context          | The JSON-LD context for the credential                                                                                |
-| type              | Type of the Verifiable Credential                                                                                     |
-| credentialSubject | Specific details contained within the credential. `id` field must be the DID of the receiver/holder of the credential |
-| issuer            | A DID owned by the organization used to sign the credential                                                           |
-| saveToBank        | `true` if the created credential should be stored in the bank, `false` if not                                         |
-| isRevocable       | `true` if the credential can be revoked later, `false` if not                                                         |
+| Parameter          | Description                                                                                                           |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| @context           | The JSON-LD context for the credential                                                                                |
+| type               | Type of the Verifiable Credential                                                                                     |
+| name               | Name of the Credential to display in the Wallet                                                                       |
+| image?             | Optional link to a background image for the credential card. If not provided, a default one is applied                |
+| credentialSubject  | Specific details contained within the credential. `id` field must be the DID of the receiver/holder of the credential |
+| issuer             | A DID owned by the organization used to sign the credential                                                           |
+| issuerOrganization | Name of the issuer organization to display in the wallet                                                              |
+| saveToBank         | `true` if the created credential should be stored in the bank, `false` if not                                         |
+| isRevocable        | `true` if the credential can be revoked later, `false` if not                                                         |
 
 Returns the signed Credential
 
